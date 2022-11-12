@@ -4,9 +4,9 @@
  * @since 18-10-2022
  */
 
-
 import java.util.Scanner;
 import javax.swing.JOptionPane;
+import Exceptions.EmptyException;
 import java.util.Queue;
 
 public class Principal {

@@ -1,4 +1,8 @@
 import java.util.Scanner;
+
+import Exceptions.NegativeException;
+import Exceptions.NoHayAcciones;
+
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -9,14 +13,26 @@ public class cartera {
     static Queue<Accion> cola = new PriorityQueue<Accion>();
 
     public static void comprar() {
-        id++;
         Scanner tecladoComprar = new Scanner(System.in);
-        System.out.println("¿Cuantas acciones desea comprar?");
-        int numeroAcciones = tecladoComprar.nextInt();
-        System.out.println("Introduce el precio de las acciones");
-        int precioAcciones = tecladoComprar.nextInt();
+        int opcion = -1;
 
-        cola.add(new Accion(id, numeroAcciones, precioAcciones));
+        do {
+            try {
+                opcion=-1;
+                System.out.println("¿Cuantas acciones desea comprar?");
+                int numeroAcciones = tecladoComprar.nextInt();
+                System.out.println("Introduce el precio de las acciones");
+                int precioAcciones = tecladoComprar.nextInt();
+                if(numeroAcciones<0 || precioAcciones<0) {
+                    opcion = 0;
+                    throw new NegativeException("\nNo puedes intoducir numeros negativos.\n");
+                }
+                id++;
+                cola.add(new Accion(id, numeroAcciones, precioAcciones));
+            } catch (NegativeException e) {
+                System.out.println(e.getMessage());
+            }
+        } while (opcion != -1);
     }
 
     public static void mostrarColaPrioridad(Queue<Accion> colaPrioridad) {
@@ -34,51 +50,72 @@ public class cartera {
     }
     
     
-    public static void vender(Queue<Accion> colaPrioridad) throws EmptyException{
+    public static void vender(Queue<Accion> colaPrioridad) {
         
         Scanner tecladoVender = new Scanner(System.in);
-        System.out.println("¿Cuantas acciones quieres vender?");
-        int numeroVender = tecladoVender.nextInt();
-        System.out.println("¿A que precio queires vender las acciones?");
-        int precioVenta = tecladoVender.nextInt();
         double beneficio;
-        int c;
+        int c, opcion = -1, numeroVender = 0, precioVenta = 0;
 
+        do {
+            try {
+                opcion = -1;
+                System.out.println("¿Cuantas acciones quieres vender?");
+                numeroVender = tecladoVender.nextInt();
+                System.out.println("¿A que precio quieres vender las acciones?");
+                precioVenta = tecladoVender.nextInt();
+                if(numeroVender<0 || precioVenta<0) {
+                    opcion = 0;
+                    throw new NegativeException("\nNo puedes intoducir numeros negativos.\n");
+                }
+            } catch (NegativeException e) {
+                System.out.println(e.getMessage());
+            }
+        } while (opcion != -1);
+        
         Queue<Accion> temporal = new PriorityQueue<Accion>();
 
-        while (!colaPrioridad.isEmpty()) {
-            Accion p = colaPrioridad.remove();
-            beneficio = precioVenta - p.getPrecio();
-            int a = p.getNumAcciones();
-            if(numeroVender < a) {
-                gananciaTotal = beneficio * numeroVender;
-            } else {
-                gananciaTotal = beneficio * a;
-            }
-            c = numeroVender - a; // C es lo que nos falta por vender en positivo
-            a = a - numeroVender;
-            if(a < 0) {
-                beneficio = 0;
-                Accion p2 = colaPrioridad.remove();
-                beneficio = precioVenta - p2.getPrecio();
-                int b = p2.getNumAcciones();
-                double beneficio2 = beneficio * c;
-                gananciaTotal = gananciaTotal + beneficio2;
-                b = b + a;
-                p2.setNumAcciones(b);
-                if(b!=0) {
-                    temporal.add(p2);
-                }
-            } else {
-                p.setNumAcciones(a);
-                if(a!=0) {
+        try {
+            while (!colaPrioridad.isEmpty()) {
+                Accion p = colaPrioridad.remove();
+                if(p.getNumAcciones() < numeroVender) {
                     temporal.add(p);
+                    throw new NoHayAcciones("No tienes tantas Acciones para vender.");
+                }
+                beneficio = precioVenta - p.getPrecio();
+                int a = p.getNumAcciones();
+                if(numeroVender < a) {
+                    gananciaTotal = beneficio * numeroVender;
+                } else {
+                    gananciaTotal = beneficio * a;
+                }
+                c = numeroVender - a; // C es lo que nos falta por vender en positivo
+                a = a - numeroVender;
+                if(a < 0) {
+                    beneficio = 0;
+                    Accion p2 = colaPrioridad.remove();
+                    beneficio = precioVenta - p2.getPrecio();
+                    int b = p2.getNumAcciones();
+                    double beneficio2 = beneficio * c;
+                    gananciaTotal = gananciaTotal + beneficio2;
+                    b = b + a;
+                    p2.setNumAcciones(b);
+                    if(b!=0) {
+                        temporal.add(p2);
+                    }
+                } else {
+                    p.setNumAcciones(a);
+                    if(a!=0) {
+                        temporal.add(p);
+                    }
                 }
             }
-        }
-        while (!temporal.isEmpty()) {
-            Accion p = temporal.remove();
-            colaPrioridad.add(p);
+        } catch (NoHayAcciones e) {
+            System.out.println(e.getMessage());
+        } finally {
+            while (!temporal.isEmpty()) {
+                Accion p = temporal.remove();
+                colaPrioridad.add(p);
+            }
         }
         System.out.println("\nGanancia total es de: " + gananciaTotal);
     }
@@ -86,6 +123,10 @@ public class cartera {
     public static void actualizar(){
         capitalTotal = capitalTotal + gananciaTotal;
         gananciaTotal = 0;
-        System.out.println("El capital actual es de: " + capitalTotal);
+        if(capitalTotal==0) {
+            System.out.println("No has vendido ninguna accion.");
+        } else {
+            System.out.println("El capital actual es de: " + capitalTotal);
+        }
     }
 }
