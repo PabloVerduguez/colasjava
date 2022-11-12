@@ -34,7 +34,8 @@ public class cartera {
     }
     
     
-    public static void vender(Queue<Accion> colaPrioridad){
+    public static void vender(Queue<Accion> colaPrioridad) throws EmptyException{
+        
         Scanner tecladoVender = new Scanner(System.in);
         System.out.println("¿Cuantas acciones quieres vender?");
         int numeroVender = tecladoVender.nextInt();
@@ -51,10 +52,8 @@ public class cartera {
             int a = p.getNumAcciones();
             if(numeroVender < a) {
                 gananciaTotal = beneficio * numeroVender;
-                // System.out.println("La ganancia total es: " + gananciaTotal);
             } else {
                 gananciaTotal = beneficio * a;
-                // System.out.println("La ganancia total es: " + gananciaTotal);
             }
             c = numeroVender - a; // C es lo que nos falta por vender en positivo
             a = a - numeroVender;
