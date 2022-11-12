@@ -1,12 +1,11 @@
 import java.util.Scanner;
-import javax.swing.JOptionPane; //Quitar cuando se elimine el main de prueba
-import javax.swing.JSpinner.NumberEditor;
-
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class cartera {
     static int id = 0;
+    static double capitalTotal;
+    static double gananciaTotal;
     static Queue<Accion> cola = new PriorityQueue<Accion>();
 
     public static void comprar() {
@@ -21,11 +20,11 @@ public class cartera {
     }
 
     public static void mostrarColaPrioridad(Queue<Accion> colaPrioridad) {
-        System.out.println("mostrar");
+        System.out.println("\n--Lista de Acciones actuales--");
         Queue<Accion> temp = new PriorityQueue<Accion>();
         while (!colaPrioridad.isEmpty()) {
             Accion p = colaPrioridad.remove();
-            System.out.println("Numero de acciones: " + p.getNumAcciones());
+            System.out.println("Paquete: " + p.getId() + " Numero de acciones: " + p.getNumAcciones());
             temp.add(p);
         }
         while (!temp.isEmpty()) {
@@ -36,23 +35,36 @@ public class cartera {
     
     
     public static void vender(Queue<Accion> colaPrioridad){
-
         Scanner tecladoVender = new Scanner(System.in);
         System.out.println("¿Cuantas acciones quieres vender?");
         int numeroVender = tecladoVender.nextInt();
         System.out.println("¿A que precio queires vender las acciones?");
         int precioVenta = tecladoVender.nextInt();
-        int ganaciaTotal;
+        double beneficio;
+        int c;
 
         Queue<Accion> temporal = new PriorityQueue<Accion>();
 
         while (!colaPrioridad.isEmpty()) {
             Accion p = colaPrioridad.remove();
+            beneficio = precioVenta - p.getPrecio();
             int a = p.getNumAcciones();
+            if(numeroVender < a) {
+                gananciaTotal = beneficio * numeroVender;
+                // System.out.println("La ganancia total es: " + gananciaTotal);
+            } else {
+                gananciaTotal = beneficio * a;
+                // System.out.println("La ganancia total es: " + gananciaTotal);
+            }
+            c = numeroVender - a; // C es lo que nos falta por vender en positivo
             a = a - numeroVender;
             if(a < 0) {
+                beneficio = 0;
                 Accion p2 = colaPrioridad.remove();
+                beneficio = precioVenta - p2.getPrecio();
                 int b = p2.getNumAcciones();
+                double beneficio2 = beneficio * c;
+                gananciaTotal = gananciaTotal + beneficio2;
                 b = b + a;
                 p2.setNumAcciones(b);
                 if(b!=0) {
@@ -69,44 +81,12 @@ public class cartera {
             Accion p = temporal.remove();
             colaPrioridad.add(p);
         }
+        System.out.println("\nGanancia total es de: " + gananciaTotal);
     }
 
-    public void actualizar(){
-        
+    public static void actualizar(){
+        capitalTotal = capitalTotal + gananciaTotal;
+        gananciaTotal = 0;
+        System.out.println("El capital actual es de: " + capitalTotal);
     }
-
-    public static void main(String[] args) throws Exception { //Main de prueba//
-        int opcion = -1;
-        Scanner leer = new Scanner(System.in);
-        do {
-            System.out.println("1.Comprar acciones\n2.Vender acciones\n3.Ganancias del capital hasta el momento\n4.Salir");
-            opcion = leer.nextInt();
-
-            if(cola.isEmpty()) {
-                System.out.println("La cola esta vacia.");
-            } else {
-                cartera.mostrarColaPrioridad(cola);
-            }
-
-            switch (opcion){
-                case 1:
-                    System.out.println("--Menu de Compra--");
-                    cartera.comprar();
-                break;
-                case 2:
-                    System.out.println("--Venta--");
-                    cartera.vender(cola);
-                break;
-                case 3:
-                break;
-                case 4:
-                System.out.println("Adios");
-                break;
-                default:
-                JOptionPane.showMessageDialog(null, "Valor incorrecto");
-            }
-        } while(opcion!=4);
-        leer.close();
-    }
-
 }

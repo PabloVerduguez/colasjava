@@ -22,18 +22,36 @@ public class Principal {
         * pacciones servirá para saber el precio de las acciones a comprar
         */
         int opcion = -1;
+        Queue<Accion> cola = cartera.cola;
         Scanner leer = new Scanner(System.in);
         do {
-            System.out.println("1.Comprar acciones\n2.Vender acciones\n3.Ganancias del capital hasta el momento\n4.Salir");
+            System.out.println("\n1.Comprar acciones\n2.Vender acciones\n3.Ganancias del capital hasta el momento\n4.Salir");
             opcion = leer.nextInt();
+
+            // if(cola.isEmpty()) {
+            //     System.out.println("La cola esta vacia.");
+            // } else {
+            //     cartera.mostrarColaPrioridad(cola);
+            // }
+
             switch (opcion){
                 case 1:
-                    System.out.println("--Menu de Compra--");
+                    System.out.println("\n--Menu de Compra--");
                     cartera.comprar();
                 break;
                 case 2:
+                    System.out.println("\n--Información de las acciones actuales--");
+                    if(cola.isEmpty()) {
+                        System.out.println("La cola esta vacia.");
+                    } else {
+                        cartera.mostrarColaPrioridad(cola);
+                    }
+                    System.out.println("\n--Menu de Venta--");
+                    cartera.vender(cola);
                 break;
                 case 3:
+                    System.out.println("\n--Capital Total--");
+                    cartera.actualizar();
                 break;
                 case 4:
                 System.out.println("Adios");
