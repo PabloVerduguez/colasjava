@@ -1,8 +1,12 @@
-import java.util.Scanner;
+/**
+ * @author Ismael LM Pablo VG Badr AZ
+ * @version 1.0.0
+ * @since 18-10-2022
+ */
 
+import java.util.Scanner;
 import Exceptions.NegativeException;
 import Exceptions.NoHayAcciones;
-
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -35,6 +39,10 @@ public class cartera {
         } while (opcion != -1);
     }
 
+    
+    /** 
+     * @param colaPrioridad
+     */
     public static void mostrarColaPrioridad(Queue<Accion> colaPrioridad) {
         System.out.println("\n--Lista de Acciones actuales--");
         Queue<Accion> temp = new PriorityQueue<Accion>();
@@ -50,6 +58,10 @@ public class cartera {
     }
     
     
+    
+    /** 
+     * @param colaPrioridad
+     */
     public static void vender(Queue<Accion> colaPrioridad) {
         
         Scanner tecladoVender = new Scanner(System.in);
@@ -77,10 +89,6 @@ public class cartera {
         try {
             while (!colaPrioridad.isEmpty()) {
                 Accion p = colaPrioridad.remove();
-                if(p.getNumAcciones() < numeroVender) {
-                    temporal.add(p);
-                    throw new NoHayAcciones("No tienes tantas Acciones para vender.");
-                }
                 beneficio = precioVenta - p.getPrecio();
                 int a = p.getNumAcciones();
                 if(numeroVender < a) {
@@ -92,6 +100,10 @@ public class cartera {
                 a = a - numeroVender;
                 if(a < 0) {
                     beneficio = 0;
+                    if(colaPrioridad.isEmpty()) {
+                        temporal.add(p);
+                        throw new NoHayAcciones("No tienes tantas Acciones para vender.");
+                    }
                     Accion p2 = colaPrioridad.remove();
                     beneficio = precioVenta - p2.getPrecio();
                     int b = p2.getNumAcciones();

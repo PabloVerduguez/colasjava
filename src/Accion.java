@@ -1,3 +1,9 @@
+/**
+ * @author Ismael LM Pablo VG Badr AZ
+ * @version 1.0.0
+ * @since 18-10-2022
+ */
+
 public class Accion implements Comparable<Accion> {
     private int id;
     private double precio;
